@@ -1,4 +1,8 @@
 echo "Building..."
+if ! [ -d ./bin ]; then
+mkdir ./bin
+fi
+
 g++ *.cpp -o ./bin/jfa
 
 if [ $? -eq 0 ]; then

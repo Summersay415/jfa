@@ -8,6 +8,9 @@ public:
     static const int NK = 4;
     static const int NR = 10;
 
+protected:
+    unsigned char key[16];
+
 private:
     unsigned char sbox[256];
     unsigned char inv_sbox[256];
@@ -16,7 +19,7 @@ private:
     unsigned char state[4][NB];
     void init_sbox();
 
-    void key_expansion(unsigned char*);
+    void key_expansion();
     void sub_bytes(bool);
     void shift_rows(bool);
     void mix_columns(bool);
@@ -28,9 +31,9 @@ private:
     unsigned char mul_by_02(const unsigned char) const;
     unsigned char mul_by_03(const unsigned char) const;
     unsigned char mul_by_09(const unsigned char) const;
-    unsigned char mul_by_0b(unsigned char) const;
-    unsigned char mul_by_0d(unsigned char) const;
-    unsigned char mul_by_0e(unsigned char) const;
+    unsigned char mul_by_0b(const unsigned char) const;
+    unsigned char mul_by_0d(const unsigned char) const;
+    unsigned char mul_by_0e(const unsigned char) const;
 
 public:
     unsigned char* decrypt(unsigned char*);
