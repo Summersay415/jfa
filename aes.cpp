@@ -124,10 +124,10 @@ void AES::add_round_key(int p_round) {
 }
 
 
-unsigned char* AES::encrypt(unsigned char* p_data) {
+unsigned char* AES::encrypt_block(unsigned char* p_block) {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < NB; j++)
-            state[i][j] = p_data[i + 4 * j];
+            state[i][j] = p_block[i + 4 * j];
     add_round_key(0);
 
     for (int i = 1; i < NR; i++) {
@@ -150,10 +150,10 @@ unsigned char* AES::encrypt(unsigned char* p_data) {
 }
 
 
-unsigned char* AES::decrypt(unsigned char* p_data) {
+unsigned char* AES::decrypt_block(unsigned char* p_block) {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < NB; j++)
-            state[i][j] = p_data[i + 4 * j];
+            state[i][j] = p_block[i + 4 * j];
     add_round_key(NR);
 
     for (int i = NR - 1; i > 0; i--) {
@@ -208,7 +208,7 @@ AES::AES() {
 }
 
 // helper functions
-inline unsigned char AES::rotl8(const unsigned char& p_x, const unsigned char& p_shift) const {
+inline unsigned char AES::rotl8(const unsigned char p_x, const unsigned char p_shift) const {
     return (p_x << p_shift) | (p_x >> (8 - p_shift));
 }
 

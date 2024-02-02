@@ -5,8 +5,8 @@
 
 using namespace std;
 
-unsigned char* JFA::encrypt_block(unsigned char* p_data) {
-    unsigned char* enc_data = encrypt(p_data);
+unsigned char* JFA::encrypt_block(unsigned char* p_block) {
+    unsigned char* enc_data = AES::encrypt_block(p_block);
     unsigned char* result = new unsigned char[6 * NB];
     for (int i = 0; i < 6 * NB; i++)
         result[i] = 0;
@@ -51,28 +51,28 @@ unsigned char* JFA::encrypt_block(unsigned char* p_data) {
 }
 
 
-unsigned char* JFA::decrypt_block(unsigned char* p_data) {
+unsigned char* JFA::decrypt_block(unsigned char* p_block) {
     unsigned char clean_data[4 * NB];
 
     int sum_data = 0, sum_key = 0;
     for (int i = 0; i < 6 * NB; i++)
-        sum_data += p_data[i];
+        sum_data += p_block[i];
     for (int i = 0; i < 4 * NK; i++)
         sum_key += key[i];
     int idxs[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
     idxs[0] = sum_data % 24;
     for (int i = 0; i < 7; i++)
-        idxs[i + 1] = (p_data[idxs[i]] - sum_key % 16) % 24;
+        idxs[i + 1] = (p_block[idxs[i]] - sum_key % 16) % 24;
 
     int clean_data_idx = 0;
     for (int i = 0; i < 6 * NB; i++) {
         if (not has(i, idxs, 8)) {
-            clean_data[clean_data_idx] = p_data[i];
+            clean_data[clean_data_idx] = p_block[i];
             clean_data_idx++;
         }
     }
 
-    unsigned char* result = decrypt(clean_data);
+    unsigned char* result = AES::decrypt_block(clean_data);
     return result;
 }
 

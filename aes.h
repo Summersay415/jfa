@@ -20,25 +20,24 @@ private:
     void init_sbox();
 
     void key_expansion();
-    void sub_bytes(bool);
-    void shift_rows(bool);
-    void mix_columns(bool);
-    void add_round_key(int);
-    void print_state() const;
+    void sub_bytes(bool p_inverted);
+    void shift_rows(bool p_inverted);
+    void mix_columns(bool p_inverted);
+    void add_round_key(int p_round);
 
     // helper functions
-    unsigned char rotl8(const unsigned char&, const unsigned char&) const;
-    unsigned char mul_by_02(const unsigned char) const;
-    unsigned char mul_by_03(const unsigned char) const;
-    unsigned char mul_by_09(const unsigned char) const;
-    unsigned char mul_by_0b(const unsigned char) const;
-    unsigned char mul_by_0d(const unsigned char) const;
-    unsigned char mul_by_0e(const unsigned char) const;
+    unsigned char rotl8(const unsigned char p_x, const unsigned char p_shift) const;
+    unsigned char mul_by_02(const unsigned char p_num) const;
+    unsigned char mul_by_03(const unsigned char p_num) const;
+    unsigned char mul_by_09(const unsigned char p_num) const;
+    unsigned char mul_by_0b(const unsigned char p_num) const;
+    unsigned char mul_by_0d(const unsigned char p_num) const;
+    unsigned char mul_by_0e(const unsigned char p_num) const;
 
 public:
-    unsigned char* decrypt(unsigned char*);
-    unsigned char* encrypt(unsigned char*);
-    void set_key(unsigned char*);
+    unsigned char* decrypt_block(unsigned char* p_block);
+    unsigned char* encrypt_block(unsigned char* p_block);
+    void set_key(unsigned char* p_key);
 
     AES();
 };

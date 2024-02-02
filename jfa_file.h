@@ -12,9 +12,9 @@ public:
         CANT_WRITE_TO_OUTPUT_FILE = 3
     };
 
-    Result encrypt_file(std::string, std::string, std::string);
-    Result decrypt_file(std::string, std::string, std::string);
-    Result generate_key(std::string) const;
+    Result encrypt_file(std::string p_input_path, std::string p_key_path, std::string p_output_path);
+    Result decrypt_file(std::string p_input_path, std::string p_key_path, std::string p_output_path);
+    Result generate_key(std::string p_output_path) const;
 };
 
 #endif
