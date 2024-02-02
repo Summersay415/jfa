@@ -1,0 +1,11 @@
+Junk Fill Algorithm (based on AES)
+
+License: no
+
+Building:
+1. Run chmod +x build.sh
+2. Run build.sh
+3. Done!
+
+Using:
+1. Run "jfa help" to see usage
