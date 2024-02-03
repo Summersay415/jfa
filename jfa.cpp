@@ -1,13 +1,11 @@
-#include <fstream>
-#include <string>
-#include <iostream>
 #include "jfa.h"
 
 using namespace std;
 
-unsigned char* JFA::encrypt_block(unsigned char* p_block) {
-    unsigned char* enc_data = AES::encrypt_block(p_block);
-    unsigned char* result = new unsigned char[6 * NB];
+
+uint8_t* JFA::encrypt_block(uint8_t* p_block) {
+    uint8_t* enc_data = AES::encrypt_block(p_block);
+    uint8_t* result = new uint8_t[6 * NB];
     for (int i = 0; i < 6 * NB; i++)
         result[i] = 0;
 
@@ -51,8 +49,8 @@ unsigned char* JFA::encrypt_block(unsigned char* p_block) {
 }
 
 
-unsigned char* JFA::decrypt_block(unsigned char* p_block) {
-    unsigned char clean_data[4 * NB];
+uint8_t* JFA::decrypt_block(uint8_t* p_block) {
+    uint8_t clean_data[4 * NB];
 
     int sum_data = 0, sum_key = 0;
     for (int i = 0; i < 6 * NB; i++)
@@ -72,12 +70,12 @@ unsigned char* JFA::decrypt_block(unsigned char* p_block) {
         }
     }
 
-    unsigned char* result = AES::decrypt_block(clean_data);
+    uint8_t* result = AES::decrypt_block(clean_data);
     return result;
 }
 
 
-void JFA::set_key(unsigned char* p_key) {
+void JFA::set_key(uint8_t* p_key) {
     AES::set_key(p_key);
 }
 

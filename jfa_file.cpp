@@ -1,4 +1,3 @@
-#include <string>
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
@@ -19,12 +18,12 @@ JFAFile::Result JFAFile::encrypt_file(string p_input_path, string p_key_path, st
     if (not foutput.is_open())
         return Result::CANT_WRITE_TO_OUTPUT_FILE;
 
-    unsigned char key_data[4 * NB];
+    uint8_t key_data[4 * NB];
     for (int i = 0; i < 4 * NB; i++)
         key_data[i] = fkey.get();
     set_key(key_data);
 
-    unsigned char block[4 * NB];
+    uint8_t block[4 * NB];
     int idx = 0;
     while (true) {
         int byte = finput.get();
@@ -34,7 +33,7 @@ JFAFile::Result JFAFile::encrypt_file(string p_input_path, string p_key_path, st
         idx++;
         if (idx == 4 * NB) {
             idx = 0;
-            unsigned char* enc_block = encrypt_block(block);
+            uint8_t* enc_block = encrypt_block(block);
             foutput.write(reinterpret_cast<char*>(enc_block), 6 * NB);
             delete[] enc_block;
         }
@@ -50,7 +49,7 @@ JFAFile::Result JFAFile::encrypt_file(string p_input_path, string p_key_path, st
             }
             block[i] = 0;
         }
-        unsigned char* enc_block = encrypt_block(block);
+        uint8_t* enc_block = encrypt_block(block);
         foutput.write(reinterpret_cast<char*>(enc_block), 6 * NB);
         delete[] enc_block;
     }
@@ -74,12 +73,12 @@ JFAFile::Result JFAFile::decrypt_file(string p_input_path, string p_key_path, st
     if (not foutput.is_open())
         return Result::CANT_WRITE_TO_OUTPUT_FILE;
 
-    unsigned char key_data[4 * NB];
+    uint8_t key_data[4 * NB];
     for (int i = 0; i < 4 * NB; i++)
         key_data[i] = fkey.get();
     set_key(key_data);
 
-    unsigned char block[6 * NB];
+    uint8_t block[6 * NB];
     int idx = 0;
     while (true) {
         int byte = finput.get();
@@ -89,7 +88,7 @@ JFAFile::Result JFAFile::decrypt_file(string p_input_path, string p_key_path, st
         idx++;
         if (idx == 6 * NB) {
             idx = 0;
-            unsigned char* decrypted_data = decrypt_block(block);
+            uint8_t* decrypted_data = decrypt_block(block);
             if ((decrypted_data[4 * NB - 1] == 0 or decrypted_data[4 * NB - 1] == 1) and finput.eof()) {
                 int stop_idx;
                 for (int i = 4 * NB - 1; i > 0; i--) {

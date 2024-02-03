@@ -13,7 +13,7 @@ void AES::key_expansion() {
     int s_idxs[4] = {4, 4, 4, 4};
     for (int c = NK; c < NB * (NR + 1); c++) {
         if (c % NK == 0) {
-            unsigned char tmp[4];
+            uint8_t tmp[4];
             for (int i = 1; i < 4; i++)
                 tmp[i - 1] = key_expanded[i][c - 1];
             tmp[4 - 1] = key_expanded[0][c - 1];
@@ -22,7 +22,7 @@ void AES::key_expansion() {
                 tmp[i] = sbox[tmp[i]];
 
             for (int r = 0; r < 4; r++) {
-                unsigned char s;
+                uint8_t s;
                 if (r == 0)
                     s = key_expanded[r][c - 4] ^ tmp[r] ^ rcon[c / NK];
                 else
@@ -33,7 +33,7 @@ void AES::key_expansion() {
         }
         else {
             for (int r = 0; r < 4; r++) {
-                unsigned char s = key_expanded[r][c - 4] ^ key_expanded[r][c - 1];
+                uint8_t s = key_expanded[r][c - 4] ^ key_expanded[r][c - 1];
                 key_expanded[r][s_idxs[r]] = s;
                 s_idxs[r]++;
             }
@@ -50,7 +50,7 @@ void AES::sub_bytes(bool p_inverted) {
 
 
 void AES::shift_rows(bool p_inverted) {
-    unsigned char temp;
+    uint8_t temp;
     if (p_inverted) {
         temp = state[1][3];
         state[1][3] = state[1][2];
@@ -96,7 +96,7 @@ void AES::shift_rows(bool p_inverted) {
 
 void AES::mix_columns(bool p_inverted) {
     for (int i = 0; i < NB; i++) {
-        unsigned char s0, s1, s2, s3;
+        uint8_t s0, s1, s2, s3;
         if (p_inverted) {
             s0 = mul_by_0e(state[0][i]) ^ mul_by_0b(state[1][i]) ^ mul_by_0d(state[2][i]) ^ mul_by_09(state[3][i]);
             s1 = mul_by_09(state[0][i]) ^ mul_by_0e(state[1][i]) ^ mul_by_0b(state[2][i]) ^ mul_by_0d(state[3][i]);
@@ -124,7 +124,7 @@ void AES::add_round_key(int p_round) {
 }
 
 
-unsigned char* AES::encrypt_block(unsigned char* p_block) {
+uint8_t* AES::encrypt_block(uint8_t* p_block) {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < NB; j++)
             state[i][j] = p_block[i + 4 * j];
@@ -141,7 +141,7 @@ unsigned char* AES::encrypt_block(unsigned char* p_block) {
     shift_rows(false);
     add_round_key(NR);
 
-    unsigned char* result = new unsigned char[4 * NB];
+    uint8_t* result = new uint8_t[4 * NB];
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < NB; j++)
             result[i + 4 * j] = state[i][j];
@@ -150,7 +150,7 @@ unsigned char* AES::encrypt_block(unsigned char* p_block) {
 }
 
 
-unsigned char* AES::decrypt_block(unsigned char* p_block) {
+uint8_t* AES::decrypt_block(uint8_t* p_block) {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < NB; j++)
             state[i][j] = p_block[i + 4 * j];
@@ -167,7 +167,7 @@ unsigned char* AES::decrypt_block(unsigned char* p_block) {
     shift_rows(true);
     add_round_key(0);
 
-    unsigned char* result = new unsigned char[4 * NB];
+    uint8_t* result = new uint8_t[4 * NB];
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < NB; j++)
             result[i + 4 * j] = state[i][j];
@@ -176,7 +176,7 @@ unsigned char* AES::decrypt_block(unsigned char* p_block) {
 }
 
 
-void AES::set_key(unsigned char* p_key) {
+void AES::set_key(uint8_t* p_key) {
     for (int i = 0; i < 4 * NK; i++)
         this->key[i] = p_key[i];
     key_expansion();
@@ -185,7 +185,7 @@ void AES::set_key(unsigned char* p_key) {
 
 void AES::init_sbox() {
     // generate sbox
-    unsigned char p = 1, q = 1;
+    uint8_t p = 1, q = 1;
     do {
         p = p ^ (p << 1) ^ (p & 0x80 ? 0x1b : 0);
         q ^= q << 1;
@@ -193,7 +193,7 @@ void AES::init_sbox() {
         q ^= q << 4;
         q ^= q & 0x80 ? 0x09 : 0;
 
-        unsigned char xformed = q ^ rotl8(q, 1) ^ rotl8(q, 2) ^ rotl8(q, 3) ^ rotl8(q, 4);
+        uint8_t xformed = q ^ rotl8(q, 1) ^ rotl8(q, 2) ^ rotl8(q, 3) ^ rotl8(q, 4);
         sbox[p] = xformed ^ 0x63;
     } while (p != 1);
     sbox[0] = 0x63;
@@ -208,33 +208,33 @@ AES::AES() {
 }
 
 // helper functions
-inline unsigned char AES::rotl8(const unsigned char p_x, const unsigned char p_shift) const {
+inline uint8_t AES::rotl8(const uint8_t p_x, const uint8_t p_shift) const {
     return (p_x << p_shift) | (p_x >> (8 - p_shift));
 }
 
-inline unsigned char AES::mul_by_02(const unsigned char p_num) const {
+inline uint8_t AES::mul_by_02(const uint8_t p_num) const {
     if (p_num < 0x80)
         return p_num << 1;
     else
         return (p_num << 1) ^ 0x1b;
 }
 
-inline unsigned char AES::mul_by_03(const unsigned char p_num) const {
+inline uint8_t AES::mul_by_03(const uint8_t p_num) const {
     return mul_by_02(p_num) ^ p_num;
 }
 
-inline unsigned char AES::mul_by_09(const unsigned char p_num) const {
+inline uint8_t AES::mul_by_09(const uint8_t p_num) const {
     return mul_by_02(mul_by_02(mul_by_02(p_num))) ^ p_num;
 }
 
-inline unsigned char AES::mul_by_0b(const unsigned char p_num) const {
+inline uint8_t AES::mul_by_0b(const uint8_t p_num) const {
     return mul_by_02(mul_by_02(mul_by_02(p_num))) ^ mul_by_02(p_num) ^ p_num;
 }
 
-inline unsigned char AES::mul_by_0d(const unsigned char p_num) const {
+inline uint8_t AES::mul_by_0d(const uint8_t p_num) const {
     return mul_by_02(mul_by_02(mul_by_02(p_num))) ^ mul_by_02(mul_by_02(p_num)) ^ p_num;
 }
 
-inline unsigned char AES::mul_by_0e(const unsigned char p_num) const {
+inline uint8_t AES::mul_by_0e(const uint8_t p_num) const {
     return mul_by_02(mul_by_02(mul_by_02(p_num))) ^ mul_by_02(mul_by_02(p_num)) ^ mul_by_02(p_num);
 }
