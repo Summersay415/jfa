@@ -1,6 +1,8 @@
+#include <cstdint>
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 #include "jfa_file.h"
 
 using namespace std;
@@ -51,6 +53,8 @@ JFAFile::Result JFAFile::encrypt_file(string p_input_path, string p_key_path, st
         }
         uint8_t* enc_block = encrypt_block(block);
         foutput.write(reinterpret_cast<char*>(enc_block), 6 * NB);
+        char mark = 35;
+        foutput.write(&mark, 1);
         delete[] enc_block;
     }
 
@@ -82,14 +86,16 @@ JFAFile::Result JFAFile::decrypt_file(string p_input_path, string p_key_path, st
     int idx = 0;
     while (true) {
         int byte = finput.get();
-        if (byte < 0)
+        if (finput.eof())
             break;
         block[idx] = byte;
         idx++;
         if (idx == 6 * NB) {
-            idx = 0;
+            idx = 2;
             uint8_t* decrypted_data = decrypt_block(block);
-            if ((decrypted_data[4 * NB - 1] == 0 or decrypted_data[4 * NB - 1] == 1) and finput.eof()) {
+            int byte0 = finput.get();
+            int byte1 = finput.get();
+            if (byte0 >= 0 and byte1 < 0) {
                 int stop_idx;
                 for (int i = 4 * NB - 1; i > 0; i--) {
                     if (decrypted_data[i] == 1) {
@@ -100,8 +106,13 @@ JFAFile::Result JFAFile::decrypt_file(string p_input_path, string p_key_path, st
                 for (int i = 0; i < stop_idx; i++)
                     foutput.write(reinterpret_cast<char*>(&(decrypted_data[i])), 1);
             }
-            else
+            else {
                 foutput.write(reinterpret_cast<char*>(decrypted_data), 16);
+                if (byte0 >= 0) {
+                    block[0] = byte0;
+                    block[1] = byte1;
+                }
+            }
             delete[] decrypted_data;
         }
     }
