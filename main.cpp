@@ -5,7 +5,7 @@
 using namespace std;
 
 
-const char VERSION[10] = "0.1";
+const char VERSION[10] = "1.0";
 
 
 void print_help(char* p_launch_command) {
@@ -96,6 +96,7 @@ int main(int p_argc, char** p_argv) {
         else
             output_file_path = p_argv[2];
 
+        cout << "Generating..." << endl;
         result = jfa.generate_key(output_file_path);
     }
 
